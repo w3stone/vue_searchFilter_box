@@ -54,17 +54,26 @@
             })
         },
         mounted(){
-            //console.log("进入detail");
-            this.params = {}; //清空参数
-            this.chartList = []; //清空
-            this.filterList = []; //清空
+            this.getData("/data01.json");
+           
         },
         methods:{
             ...mapMutations({
-                ifLoading: 'setLoading', //改变加载状态
-                innerChartData: 'changeInnerChartData',
-                changeFilterDgVisible:"changeFilterDgVisible"
+                changeSearchList: "changeSearchList"
             }),
+            //获取数据
+            getData(apiName){
+                var url = "http://47.98.205.88:3000/api/filterBox" + apiName;
+                this.axios.get(url).then((response) => {
+                    var data = response.data.data;
+                    console.log(data);
+                    this.changeSearchList(data);
+
+
+                }).catch((error)=>{
+                    console.log(error);    
+                });
+            },
             paramsChanged(data){
                 this.dialogChanged++;
                 this.params = data;
