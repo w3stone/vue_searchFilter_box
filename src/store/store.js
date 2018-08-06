@@ -5,50 +5,44 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
-        loginDomain: "/api/api",
-        mainDomain: "/Pe",
-        baseParams:{ //api基本参数
-            appname: "Suvalue_DataModel",
-            token: "350E6436-8A02-4683-9697-8AAD368B1D91", //校验码
-            device: "3", //设备号 1 苹果 2 安卓 3 网页
-            version: "1.0.0.0.0"
-        },
-        detailData: [],
-        scroll: false, //是否滚动
-        dialogVisible: false, //弹框可视状态
-        updateList: [], //需要更新的列表
-        submitTimes: 0, //提交次数
-        modelId: "0" //modelId
+        profileDialogVisible: false, //个人信息完善框可视状态
+        filterDialogVisible: false, //筛选条件弹窗可视状态(弃用)
+        chartDialogVisible: false, //二级图表弹框可视状态
+        ifLoading: false, //是否正在加载
+        searchList: [], //条件筛选列表
+        modelListCopy: [], //筛选条件拷贝
+        filterListItem: [], //即将被删除的筛选条件
+        innerChartData: [] //弹框内部数据
     },
     getters:{
-        getLoginDomain (state) {
-            return state.loginDomain;
+        getImgDomain (state) {
+            return state.imgDomain;
         },
-        getMainDomain (state) {
-            return state.mainDomain;
-        },
-        getScroll (state){
-            return state.scroll;
-        }
     },
     mutations: {
-        changeScroll(state, bol) {
-            state.scroll = bol;
+        setLoading(state, bol){
+            state.ifLoading = bol;
         },
-        changeModelId(state, id){
-            state.modelId = id;
+        changeProfileDgVisible(state, bol){ //改变个人信息弹框可视状态
+            state.profileDialogVisible = bol;
         },
-        changeDialogVisible(state, bol){
-            state.dialogVisible = bol;
+        changeFilterDgVisible(state, bol){ //改变筛选条件弹框可视状态(弃用)
+            state.filterDialogVisible = bol;
         },
-        changeDetailData(state, list){
-            state.detailData = list;
+        changeChartDgVisible(state, bol){ //改变二级图表弹框可视状态
+            state.chartDialogVisible = bol;
         },
-        changeUpdateList(state, list){
-            state.updateList = list;
+        changeSearchList(state, list){
+            state.searchList = list;
         },
-        updateSubmitTimes(state){
-            state.submitTimes++;
+        changeModelListCopy(state, list){
+            state.modelListCopy = list;
+        },
+        changefilterListItem(state, list){
+            state.filterListItem = list;
+        },
+        changeInnerChartData(state, data){
+            state.innerChartData = data;
         }
         
     }
