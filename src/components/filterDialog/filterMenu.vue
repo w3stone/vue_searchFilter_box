@@ -1,5 +1,5 @@
 <template>
-    <div class="home">
+    <div class="filter_box">
         <!--筛选条件-->
         <div class="filter_box clearfix">
             <filter-box @paramsChanged="paramsChanged" @hasUnfilled="hasUnfilled"></filter-box>
@@ -11,19 +11,16 @@
             <filter-list @filterListChange="filterListChange"></filter-list>
             <el-button type="primary" icon="el-icon-search" class="filterBtn" @click="searchChart()">查询</el-button>
         </div>
-
-        <!--显示-->
-        <div style="margin-top:80px;">{{showParas}}</div>
     </div>
 </template>
 
 <script>
     import {mapState, mapMutations} from 'vuex'
-    import filterBox from '@/components/filterDialog/filterBox'
-    import filterList from '@/components/filterDialog/filterList'
+    import filterBox from './filterBox'
+    import filterList from './filterList'
     
     export default {
-		name: "home",
+		name: "filter_box",
         data: function() {
             return {
                 chartList: [], //用于存储返回的图表数据
@@ -111,7 +108,7 @@
 </script>
 
 <style lang="scss" type="text/css">
-    .home{
+    .filter_box{
         height: 100%;
         overflow-y: hidden;
         
