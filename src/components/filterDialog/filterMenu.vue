@@ -1,8 +1,12 @@
+<!--完整组件-->
 <template>
-    <div class="filter_box">
+    <div class="filter_menu">
         <!--筛选条件-->
         <div class="filter_box clearfix">
-            <filter-box @paramsChanged="paramsChanged" @hasUnfilled="hasUnfilled"></filter-box>
+            <filter-box :searchList="searchList" 
+                @paramsChanged="paramsChanged" 
+                @hasUnfilled="hasUnfilled">
+            </filter-box>
         </div>
 
         <!--筛选条件-->
@@ -20,7 +24,10 @@
     import filterList from './filterList'
     
     export default {
-		name: "filter_box",
+        name: "filter_menu",
+        props:{
+            searchList:{type: Array}
+        },
         data: function() {
             return {
                 chartList: [], //用于存储返回的图表数据
@@ -33,14 +40,14 @@
         computed:{
             //获取vuex的传值
             ...mapState({
-                "searchList": state=>state.searchList
+                //"searchList": state=>state.searchList
             }),
             showParas(){
                 return JSON.stringify(this.params);
             }
         },
         mounted(){
-            this.getData("/data01.json");
+            //this.getData("/data01.json");
            
         },
         methods:{
@@ -108,7 +115,7 @@
 </script>
 
 <style lang="scss" type="text/css">
-    .filter_box{
+    .filter_menu{
         height: 100%;
         overflow-y: hidden;
         

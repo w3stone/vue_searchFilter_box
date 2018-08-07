@@ -1,5 +1,6 @@
+<!--筛选条件-->
 <template>
-    <div class="filter_body clearfix" v-if="searchList.length>0">
+    <div class="filter_body clearfix">
 
         <filter-input-item v-for="(item,index) in searchList" :width="eachWidth"
             :name="item.Title" :required="item.Required" :key="index">
@@ -72,6 +73,9 @@
     
     export default {
         name: "filterBody",
+        props:{
+            searchList:{type: Array}
+        },
         data(){
             return {
                 params:{}, //参数
@@ -83,7 +87,7 @@
         computed:{
             //获取vuex的传值
             ...mapState({
-                "searchList": state=>state.searchList, //获取搜索条件列表
+                //"searchList": state=>state.searchList, //获取搜索条件列表
                 "filterListItem": state=>state.filterListItem,
                 "modelListCopy": state=>state.modelListCopy
             }),
@@ -252,7 +256,7 @@
         watch:{
             searchList:{
                 handler(newVal, oldVal){
-                    //console.log(newVal, oldVal);
+                    console.log(newVal, oldVal);
                     this.params = {}; //清空
                     this.modelList = []; //清空
                     this.modifySelectType();

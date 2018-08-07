@@ -12,12 +12,7 @@
     import {mapState, mapMutations} from 'vuex'
     
     export default {
-		name: "detail",
-        data: function() {
-            return {
-                //modelList:[]
-            }
-        },
+        name: "detail",
         computed:{
             filterList(){ //最终筛选条件
                 let arr = [];

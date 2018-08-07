@@ -1,16 +1,7 @@
 <template>
     <div class="home">
-        <!--筛选条件-->
-        <div class="filter_box clearfix">
-            <filter-box @paramsChanged="paramsChanged" @hasUnfilled="hasUnfilled"></filter-box>
-        </div>
 
-        <!--筛选条件-->
-        <div class="filter_bar top_bar clearfix">
-            <p>筛选条件: </p>
-            <filter-list @filterListChange="filterListChange"></filter-list>
-            <el-button type="primary" icon="el-icon-search" class="filterBtn" @click="searchChart()">查询</el-button>
-        </div>
+        <filter-menu :searchList="searchList"></filter-menu>
 
         <!--显示-->
         <div style="margin-top:80px;">{{showParas}}</div>
@@ -19,14 +10,13 @@
 
 <script>
     import {mapState, mapMutations} from 'vuex'
-    import filterBox from '@/components/filterDialog/filterBox'
-    import filterList from '@/components/filterDialog/filterList'
+    import filterMenu from '@/components/filterDialog/filterMenu'
     
     export default {
 		name: "home",
         data: function() {
             return {
-                chartList: [], //用于存储返回的图表数据
+                searchList: [], //后端返回的所有搜索条件
                 params: {}, //api参数
                 filterLength: 0,
                 unfilledList: [], //没有填的必选项集合
@@ -36,7 +26,7 @@
         computed:{
             //获取vuex的传值
             ...mapState({
-                "searchList": state=>state.searchList
+                //"searchList": state=>state.searchList
             }),
             showParas(){
                 return JSON.stringify(this.params);
@@ -56,19 +46,11 @@
                 this.axios.get(url).then((response) => {
                     var data = response.data.data;
                     console.log(data);
-                    this.changeSearchList(data);
-
+                    this.searchList = data;
 
                 }).catch((error)=>{
                     console.log(error);    
                 });
-            },
-            paramsChanged(data){
-                console.log(data);
-                this.params = data;
-            },
-            hasUnfilled(data){
-                this.unfilledList = data;
             },
             //获取图表信息
             searchChart(){
@@ -83,28 +65,10 @@
             }
         },
         watch:{
-            level3Id:{ //如果第三级菜单id发生变化
-                handler(newVal, oldVal){
-                    this.isShowing = true;
-                    this.params.MenuID = parseInt(this.level3Id); //重新设置MenuID
-
-                    if(this.filterLength>0){
-                        //this.params.MenuID = parseInt(this.level3Id); //重新设置MenuID
-                        this.searchChart(); //重新搜索
-                    }else{
-                        this.chartList = []; //清空
-                        //this.ifLoading(false);
-                    }
-                }
-            },
-            chartList:{
-                handler(newVal, oldVal){
-                    //console.log(newVal, oldVal);
-                }
-            }
+            
         },
         components:{
-            filterBox, filterList
+            filterMenu
         }
 
 	}
