@@ -153,11 +153,6 @@
             
         }
 
-        //图表页面
-        .charts_page{
-            padding: 16px;
-        }
-
     }
 
 </style>
