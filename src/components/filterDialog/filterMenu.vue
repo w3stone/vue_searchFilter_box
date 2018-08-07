@@ -19,7 +19,6 @@
 </template>
 
 <script>
-    import {mapState, mapMutations} from 'vuex'
     import filterBox from './filterBox'
     import filterList from './filterList'
     
@@ -30,45 +29,14 @@
         },
         data: function() {
             return {
-                chartList: [], //用于存储返回的图表数据
                 params: {}, //api参数
                 filterLength: 0,
                 unfilledList: [], //没有填的必选项集合
-                dialogChanged: 0 //用于记录params变化次数
             }
-        },
-        computed:{
-            //获取vuex的传值
-            ...mapState({
-                //"searchList": state=>state.searchList
-            }),
-            showParas(){
-                return JSON.stringify(this.params);
-            }
-        },
-        mounted(){
-            //this.getData("/data01.json");
-           
         },
         methods:{
-            ...mapMutations({
-                changeSearchList: "changeSearchList"
-            }),
-            //获取数据
-            getData(apiName){
-                var url = "http://47.98.205.88:3000/api/filterBox" + apiName;
-                this.axios.get(url).then((response) => {
-                    var data = response.data.data;
-                    console.log(data);
-                    this.changeSearchList(data);
-
-
-                }).catch((error)=>{
-                    console.log(error);    
-                });
-            },
             paramsChanged(data){
-                console.log(data);
+                //console.log(data);
                 this.params = data;
             },
             hasUnfilled(data){
@@ -79,7 +47,7 @@
                 if(this.unfilledList.length>0){ //如果有必填项未填
                     this.$message({message: this.unfilledList.join(",") + '为必填项！', type: 'error'});
                 }else{
-                    console.log(this.params);
+                    this.$emit("paramsChanged", this.params); //向父组件传参
                 }
             },
             filterListChange(legnth){
@@ -89,21 +57,12 @@
         watch:{
             level3Id:{ //如果第三级菜单id发生变化
                 handler(newVal, oldVal){
-                    this.isShowing = true;
                     this.params.MenuID = parseInt(this.level3Id); //重新设置MenuID
 
                     if(this.filterLength>0){
-                        //this.params.MenuID = parseInt(this.level3Id); //重新设置MenuID
+                        this.params.MenuID = parseInt(this.level3Id); //重新设置MenuID
                         this.searchChart(); //重新搜索
-                    }else{
-                        this.chartList = []; //清空
-                        //this.ifLoading(false);
                     }
-                }
-            },
-            chartList:{
-                handler(newVal, oldVal){
-                    //console.log(newVal, oldVal);
                 }
             }
         },
@@ -116,14 +75,7 @@
 
 <style lang="scss" type="text/css">
     .filter_menu{
-        height: 100%;
-        overflow-y: hidden;
         
-        .right{
-            height: 100%;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
         .top_bar{
             position: relative;
             padding: 8px 18px;

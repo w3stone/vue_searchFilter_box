@@ -91,16 +91,13 @@
                 "filterListItem": state=>state.filterListItem,
                 "modelListCopy": state=>state.modelListCopy
             }),
-            level3Id(){ //三级菜单id
+            level3Id(){ //三级菜单id(用作参数)
                 let chartId = this.$route.query.chartId;
                 return  (typeof chartId != "undefined") ? chartId.split("-")[1]: 0;
             },
             eachWidth(){
                 return parseInt(100/this.searchList.length) + "%";
             }
-        },
-        mounted(){
-            
         },
         methods:{
             ...mapMutations({
@@ -256,12 +253,11 @@
         watch:{
             searchList:{
                 handler(newVal, oldVal){
-                    console.log(newVal, oldVal);
+                    //+console.log(newVal, oldVal);
                     this.params = {}; //清空
                     this.modelList = []; //清空
                     this.modifySelectType();
-                    //console.log(newVal);
-                    //console.log(this.modelListCopy);
+                    
                     let usefulModelList = Enumerable.From(this.modelListCopy).Where((o)=>{return o.model.length>0;}).ToArray();
                     //console.log(usefulModelList);
                     usefulModelList.forEach((mitem)=>{ //循环已经选择的项
