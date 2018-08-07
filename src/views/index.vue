@@ -33,7 +33,7 @@
             }
         },
         mounted(){
-            this.getData("/data01.json");
+            this.getData("/filter_data.json");
            
         },
         methods:{
