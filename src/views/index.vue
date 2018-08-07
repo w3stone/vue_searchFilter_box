@@ -1,10 +1,12 @@
 <template>
     <div class="home">
 
-        <filter-menu :searchList="searchList" @paramsChanged="paramsChanged"></filter-menu>
+        <filter-menu :searchList="searchList" @paramsChanged="paramsChanged">
+            <h3 class="title" slot="title">搜索框</h3>
+        </filter-menu>
 
         <!--显示-->
-        <div style="margin-top:80px;">{{params}}</div>
+        <div style="margin-top:80px;padding-left:20px;">{{params}}</div>
     </div>
 </template>
 
@@ -28,7 +30,7 @@
                 var url = "http://47.98.205.88:3000/api/filterBox" + apiName;
                 this.axios.get(url).then((response) => {
                     var data = response.data.data;
-                    console.log(data);
+                    //console.log(data);
                     this.searchList = data;
 
                 }).catch((error)=>{
@@ -53,6 +55,11 @@
     .home{
         height: 100%;
         overflow-y: hidden;
+
+        .title{
+            float: left;
+            line-height: 40px;
+        }
     }
 
 </style>

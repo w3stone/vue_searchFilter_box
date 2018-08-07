@@ -1,8 +1,18 @@
 <!--完整组件-->
 <template>
     <div class="filter_menu">
+        <!--当前目录-->
+        <div class="location_bar top_bar clearfix">
+            <slot name="title"></slot>
+
+            <div class="collapseBtn"  @click="toggleShow">
+                <span>{{ isShowing?"收起":"展开" }}</span>
+                <i class="el-icon-arrow-up" :class="{hover:isShowing, unhover:!isShowing}"></i>
+            </div>
+        </div>
+
         <!--筛选条件-->
-        <div class="filter_box clearfix">
+        <div class="filter_box clearfix" v-show="isShowing">
             <filter-box :searchList="searchList" 
                 @paramsChanged="paramsChanged" 
                 @hasUnfilled="hasUnfilled">
@@ -32,16 +42,10 @@
                 params: {}, //api参数
                 filterLength: 0,
                 unfilledList: [], //没有填的必选项集合
+                isShowing: true
             }
         },
         methods:{
-            paramsChanged(data){
-                //console.log(data);
-                this.params = data;
-            },
-            hasUnfilled(data){
-                this.unfilledList = data;
-            },
             //获取图表信息
             searchChart(){
                 if(this.unfilledList.length>0){ //如果有必填项未填
@@ -50,8 +54,19 @@
                     this.$emit("paramsChanged", this.params); //向父组件传参
                 }
             },
+            paramsChanged(data){
+                //console.log(data);
+                this.params = data;
+            },
+            hasUnfilled(data){
+                this.unfilledList = data;
+            },
             filterListChange(legnth){
                 this.filterLength = legnth;
+            },
+            //隐藏展示
+            toggleShow(){
+                this.isShowing = !this.isShowing;
             }
         },
         watch:{
