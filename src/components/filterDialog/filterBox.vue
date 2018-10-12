@@ -41,7 +41,7 @@
             </el-select>
 
             <!--select多选-->
-            <el-select v-model="modelList[index].model[0]" multiple placeholder="请选择" v-if="item.Type==4">
+            <el-select v-model="modelList[index].model" multiple placeholder="请选择" v-if="item.Type==4">
                 <el-option v-for="(itemc) in modelList[index].options"
                     :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
                 </el-option>
@@ -119,32 +119,66 @@
             setParas(){
                 let unfilledList = []; //未填写的必填项
 
+                console.log(this.modelList);
+
                 this.modelList.forEach((obj)=>{
-                    if(obj.type==5){
-                        let tempArr = [];
-                        if(obj.model.length>0){
-                            obj.model.forEach(value=>{ //item:""
-                                tempArr.push(value);
-                            });
-                            this.params[obj.name] = tempArr.join(","); //数组转字符串并添加到参数中
-                        }else{
-                            if(obj.required) unfilledList.push(obj.title); //判断必填项
-                            this.params[obj.name] = "";
-                        }
+                    let inputType = obj.type; //表单控件类型
+                    let inputModel = obj.model; //表单model
+                    let paramsName = obj.name; //作为参数名
+
+                    if(!inputModel.length>0){
+                        if(obj.required) unfilledList.push(obj.title); //判断必填项
+                        this.params[paramsName] = "";
 
                     }else{
-                        let tempArr = [];
-                        console.log(obj.model);
-                        if(obj.model.length>0){
-                            obj.model.forEach((item)=>{ //item:{value:"",name:""}
+                        if(inputType==5){ //级联多选
+                            let tempArr = [];
+                            inputModel.forEach(value=>{ //item:""
+                                tempArr.push(value);
+                            });
+                            this.params[paramsName] = tempArr.join(","); //数组转字符串并添加到参数中
+
+                        }else if(inputType==0){ //普通input
+                            this.params[paramsName] = inputModel[0];
+
+                        }else{
+                            let tempArr = [];
+
+                            inputModel.forEach((item)=>{ //item:{value:"",name:""}
                                 tempArr.push( JSON.parse(item).value );
                             });
-                            this.params[obj.name] = tempArr.join(","); //数组转字符串并添加到参数中
-                        }else{
-                            if(obj.required) unfilledList.push(obj.title); //判断必填项
-                            this.params[obj.name] = "";
+                            this.params[paramsName] = tempArr.join(","); //数组转字符串并添加到参数中
                         }
                     }
+
+                    // if(inputType==5){
+                    //     let tempArr = [];
+                    //     if(inputModel.length>0){
+                    //         inputModel.forEach(value=>{ //item:""
+                    //             tempArr.push(value);
+                    //         });
+                    //         this.params[paramsName] = tempArr.join(","); //数组转字符串并添加到参数中
+                    //     }else{
+                    //         if(obj.required) unfilledList.push(obj.title); //判断必填项
+                    //         this.params[paramsName] = "";
+                    //     }
+
+                    // }else if(inputType==0){ //普通input
+                    //     this.params[paramsName] = inputModel.length>0? inputModel[0]: "";
+
+                    // }else{
+                    //     let tempArr = [];
+                    //     //console.log(inputModel);
+                    //     if(inputModel.length>0){
+                    //         inputModel.forEach((item)=>{ //item:{value:"",name:""}
+                    //             tempArr.push( JSON.parse(item).value );
+                    //         });
+                    //         this.params[paramsName] = tempArr.join(","); //数组转字符串并添加到参数中
+                    //     }else{
+                    //         if(obj.required) unfilledList.push(obj.title); //判断必填项
+                    //         this.params[paramsName] = "";
+                    //     }
+                    // }
                 });
                 
                 this.$emit("hasUnfilled", unfilledList);
