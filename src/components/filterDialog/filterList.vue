@@ -2,7 +2,7 @@
     <!--筛选条件-->
     <ul class="filter_list clearfix">
         <li v-for="(item,index) in filterList" :key="index" v-show="item.length">
-            <span>{{ item[2]!=5? JSON.parse(item[0]).name: item[0] }}</span>
+            <span>{{ (item[2]!=5 && item[2]!=0)? JSON.parse(item[0]).name: item[0] }}</span>
             <i class="cancelBtn el-icon-close" @click="del(item)"></i>
         </li>
     </ul>

@@ -6,8 +6,8 @@
             :name="item.Title" :required="item.Required" :key="index">
 
             <!--input框-->
-            <el-input v-model="modelList[index].model[0]" clearable v-if="item.Type==0"
-                placeholder="请输入内容" style="max-width:200px;">
+            <el-input v-model="modelList[index].model[0]" v-if="item.Type==0" placeholder="请输入内容" 
+                style="max-width:200px;">
             </el-input>
             
             <!--radio单选-->
@@ -119,12 +119,12 @@
             setParas(){
                 let unfilledList = []; //未填写的必填项
 
-                console.log(this.modelList);
-
                 this.modelList.forEach((obj)=>{
                     let inputType = obj.type; //表单控件类型
                     let inputModel = obj.model; //表单model
                     let paramsName = obj.name; //作为参数名
+
+                    console.log(inputModel);
 
                     if(!inputModel.length>0){
                         if(obj.required) unfilledList.push(obj.title); //判断必填项
