@@ -8,10 +8,16 @@ import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import store from './store/store'
+//
+import {dataGet} from './assets/scripts/ajaxFn.js'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 Vue.use(VueAxios, axios);
+
+//全局
+Vue.prototype.$dataGet = dataGet;
+
 
 /* eslint-disable no-new */
 new Vue({

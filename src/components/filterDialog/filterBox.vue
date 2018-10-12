@@ -4,15 +4,20 @@
 
         <filter-input-item v-for="(item,index) in searchList" :width="eachWidth"
             :name="item.Title" :required="item.Required" :key="index">
+
+            <!--input框-->
+            <el-input v-model="modelList[index].model[0]" clearable v-if="item.Type==0"
+                placeholder="请输入内容" style="max-width:200px;">
+            </el-input>
             
-            <!--单选-->
+            <!--radio单选-->
             <el-radio-group v-model="modelList[index].model[0]" v-if="item.Type==1">
                 <el-radio-button v-for="(itemc, indexc) in item.SelectItemList" 
                     :key="indexc" :label="JSON.stringify(itemc)">{{itemc.name}}
                 </el-radio-button>
             </el-radio-group>
 
-            <!--多选-->
+            <!--checkbox多选-->
             <el-checkbox :indeterminate="modelList[index].isIndeterminate" v-model="modelList[index].checkAll"
                 @change="(val)=>{
                     modelList[index].model = val? transSearchList(item.SelectItemList): [];
@@ -28,18 +33,25 @@
                 </el-checkbox-button>
             </el-checkbox-group>
 
-            <!--自动补全-->
-            <el-select v-model="modelList[index].model" multiple filterable remote reserve-keyword 
-                placeholder="请输入关键词" :remote-method="(queryString)=>{
-                    remoteMethod(queryString, item.SelectItemList, index);
-                }" v-if="item.Type==3">
+            <!--select单选-->
+            <el-select v-model="modelList[index].model[0]" placeholder="请选择" v-if="item.Type==3">
                 <el-option v-for="(itemc) in modelList[index].options"
                     :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
                 </el-option>
             </el-select>
 
-            <!--多选框-->
-            <el-select v-model="modelList[index].model" multiple placeholder="请选择" v-if="item.Type==4">
+            <!--select多选-->
+            <el-select v-model="modelList[index].model[0]" multiple placeholder="请选择" v-if="item.Type==4">
+                <el-option v-for="(itemc) in modelList[index].options"
+                    :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
+                </el-option>
+            </el-select>
+
+            <!--自动补全-->
+            <el-select v-model="modelList[index].model" multiple filterable remote reserve-keyword 
+                placeholder="请输入关键词" :remote-method="(queryString)=>{
+                    remoteMethod(queryString, item.SelectItemList, index);
+                }" v-if="item.Type==5">
                 <el-option v-for="(itemc) in modelList[index].options"
                     :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
                 </el-option>
@@ -49,7 +61,7 @@
             <el-select v-model="modelList[index].model" multiple filterable remote reserve-keyword 
                 placeholder="请输入关键词" :remote-method="(queryString)=>{
                     remoteMethodMulti(queryString, item.SelectItemList, index);
-                }" v-if="item.Type==5">
+                }" v-if="item.Type==6">
                 <el-option-group v-for="group in modelList[index].options"
                     :key="group.name"
                     :label="group.name" @click.native="multiCheckAll(group.name, index)">
@@ -122,6 +134,7 @@
 
                     }else{
                         let tempArr = [];
+                        console.log(obj.model);
                         if(obj.model.length>0){
                             obj.model.forEach((item)=>{ //item:{value:"",name:""}
                                 tempArr.push( JSON.parse(item).value );
@@ -147,22 +160,26 @@
             modifySelectType(){
                 //console.log(this.searchList);
                 this.searchList.forEach((item) => { //动态生成v-model
-                    var obj = {"name":item.CName, "title":item.Title, "required":item.Required, "type":item.Type,
-                        "listLength":item.SelectItemList.length, "model":[]}
+                    let obj = {"name":item.CName, "title":item.Title, "required":item.Required, "type":item.Type,
+                        "listLength":item.SelectItemList.length, "model":[]};
 
-                    if(item.Type==1){ //单选
+                    let inputType = item.Type; //表单样式类型
+
+                    if(inputType==0){ //input框
+
+                    }else if(inputType==1){ //radio单选
                         
-                    }else if(item.Type==2){ //多选
+                    }else if(inputType==2){ //checkbox多选
                         obj.checkAll = false;
                         obj.isIndeterminate = false;
 
-                    }else if(item.Type==3){ //自动补全
-                        obj.options = item.SelectItemList.slice(0,20);
-
-                    }else if(item.Type==4){ //select框
+                    }else if(inputType==3 || inputType==4){ //select框(单选&多选)
                         obj.options = item.SelectItemList;
 
-                    }else if(item.Type==5){ //级联多选
+                    }else if(inputType==5){ //自动补全
+                        obj.options = item.SelectItemList.slice(0,20);
+
+                    }else if(inputType==6){ //级联多选
                         let level1List = Enumerable.From(item.SelectItemList).Distinct("o=>o.name").ToArray();
                         obj.options = level1List.map(itemi=>{
                             let children = Enumerable.From(item.SelectItemList).Where((o)=>{return o.name==itemi.name;}).ToArray();
@@ -253,7 +270,7 @@
         watch:{
             searchList:{
                 handler(newVal, oldVal){
-                    //+console.log(newVal, oldVal);
+                    //console.log(newVal, oldVal);
                     this.params = {}; //清空
                     this.modelList = []; //清空
                     this.modifySelectType();
