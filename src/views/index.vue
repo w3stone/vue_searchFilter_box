@@ -32,7 +32,7 @@
         },
         methods:{
             getSearchList(){
-                this.$dataGet("/Selection/GetSelectionByMenuID", {"menuID": this.menuId+731}, (data)=>{
+                this.$dataGet("/Selection/GetSelectionByMenuID", {"menuID": parseInt(this.menuId) + 731}, (data)=>{
                     this.searchList = data;
                     console.log(data);
                 });

@@ -9,7 +9,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import store from './store/store'
 //
-import {dataGet} from './assets/scripts/ajaxFn.js'
+import {dataGet, dataPost} from './assets/scripts/ajaxFn.js'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI);
@@ -17,6 +17,7 @@ Vue.use(VueAxios, axios);
 
 //全局
 Vue.prototype.$dataGet = dataGet;
+Vue.prototype.$dataPost = dataPost;
 
 
 /* eslint-disable no-new */

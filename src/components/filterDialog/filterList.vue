@@ -1,8 +1,8 @@
 <template>
     <!--筛选条件-->
     <ul class="filter_list clearfix">
-        <li v-for="(item,index) in filterList" :key="index" v-show="item.length">
-            <span>{{ (item[2]!=5 && item[2]!=0)? JSON.parse(item[0]).name: item[0] }}</span>
+        <li v-for="(item,index) in filterList" :key="index" v-show="item.model">
+            <span>{{ filterShow(item) }}</span>
             <i class="cancelBtn el-icon-close" @click="del(item)"></i>
         </li>
     </ul>
@@ -17,13 +17,20 @@
             filterList(){ //最终筛选条件
                 let arr = [];
                 this.modelListCopy.forEach((obj, index)=>{
+                    //console.log(obj);
                     obj.model.forEach((item)=>{
-                        arr.push( [item, index, obj.type, obj.listLength] );
+                        arr.push({
+                            "model": item,
+                            "type": obj.type,
+                            "length": obj.listLength,
+                            "index": index
+                        });
                     });
                     
                 });
                 this.$emit("filterListChange", arr.length);
-                return arr; //格式:[[model(string), index, type]]
+                //console.log(arr);
+                return arr;
             },
             //获取vuex的传值
             ...mapState({
@@ -37,6 +44,16 @@
             }),
             del(list){
                 this.changefilterListItem(list);
+            },
+            //列表最终显示
+            filterShow(filterItem){
+                let type = filterItem.type;
+                if(type!=1 && type!=6 && type!=10){
+                    return JSON.parse(filterItem.model).name;
+                }else{
+                    return filterItem.model;
+                }
+
             }
         }
 

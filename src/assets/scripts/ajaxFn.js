@@ -26,21 +26,37 @@ function initFn(params, callback, argument){
 function dataGet(apiName, params, callback){
     var url = domain + apiName;
     var obj = initFn(params, callback, arguments[1]);
-    var nparams = obj.nparams;
+    params = obj.nparams;
     callback = obj.callback;
 
-    axios.get(url, {params: nparams}).then((response) => {
-        var all = response.data;
-        var data = response.data.data;
+    // axios.get(url, {params: nparams}).then((response) => {
+    //     var all = response.data;
+    //     var data = response.data.data;
 
-        if(all.state!=1)
-            console.log(all.state, all.message);
+    //     if(all.state!=1)
+    //         console.log(all.state, all.message);
 
-        if(callback) callback(data, all);
+    //     if(callback) callback(data, all);
 
-    }).catch((error)=>{
-        console.log(error);    
+    // }).catch((error)=>{
+    //     console.log(error);    
+    // });
+
+    $.ajax({
+        type:'GET',
+        url: url,
+        data: params,
+        success: (response)=>{
+            var all = response;
+            //console.log(all);
+            if(callback) callback(all.data, all);
+
+        },
+        error:(error)=>{
+            console.log(error);
+        }
     });
+
 }
 
 
@@ -48,22 +64,40 @@ function dataGet(apiName, params, callback){
 function dataPost(apiName, params, callback){
     var url = domain + apiName;
     var obj = initFn(params, callback, arguments[1]);
-    var nparams = obj.nparams;
+    params = obj.nparams;
     callback = obj.callback;
 
-    axios.post(url, nparams).then((response) => {
-        var all = response.data;
-        var data = response.data.data;
+    // axios.post(url, nparams).then((response) => {
+    //     var all = response.data;
+    //     var data = response.data.data;
         
-        if(all.state==1){ //成功
-            if(callback) callback(data, all);
-        }else{ //失败
-            console.log(all.state, all.message);
+    //     if(all.state==1){ //成功
+    //         if(callback) callback(data, all);
+    //     }else{ //失败
+    //         console.log(all.state, all.message);
+    //     }
+        
+    // }).catch((error)=>{
+    //     console.log(error);
+    // });
+
+    $.ajax({
+        type:'POST',
+        url: url,
+        contentType:"application/json; charset=utf-8",
+        data: JSON.stringify(params),
+        dataType: "json",
+        success: (response)=>{
+            var all = response;
+            //console.log(all);
+            if(callback) callback(all.data, all);
+
+        },
+        error:(error)=>{
+            console.log(error);
         }
-        
-    }).catch((error)=>{
-        console.log(error);
     });
+
 }
 
 

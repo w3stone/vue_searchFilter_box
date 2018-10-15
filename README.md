@@ -1,21 +1,43 @@
-# new_demo_yarn
 
-> A Vue.js project
+## 数据格式(Data Format)
+```javascript
 
-## Build Setup
+  data:{
+    "chartData": [ //主要数据
+      {"x":"", "y":"", "value":0, "name":""},
+      {"x":"", "y":"", "value":0, "name":""},
+      ......
+    ],
+    "title":"", //标题
+	"chartType": 0, //图表模板id
+    "xTitle": "", //x轴标题
+    "yTitle": "", //y轴标题
+    "xUnit": "", //x轴单位
+    "yUnit": "", //y轴单位
+    "vUnit": "", //value轴单位   
+}
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## 使用方法(How to Use)
+
+### 1、使用chartItem组件(Use chartItem template)
+
+```html
+
+    <chart-item :data="data" chartId="id" :chartType="101" chartConfig=""></chart-item>
+
+```
+
+### 2、直接使用(Direct Use)
+
+```javascript
+
+    var chart = new SuCharts(data, chartId, chartType);
+    chart.drawChart(chartConfig);
+
+```
+
+### 补充(Additional Remarks)
+chartType: see in "@/assets/scripts/charts/suCharts.js"
+chartConfig: see in "@/assets/scripts/charts/tools/defaultConfig.js"
