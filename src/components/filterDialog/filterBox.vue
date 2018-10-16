@@ -7,7 +7,7 @@
 
             <!--1、input框-->
             <el-input v-model="modelList[index].model[0]" v-if="item.Type==1" placeholder="请输入内容" 
-                style="max-width:200px;">
+                style="max-width:200px;" :ref="item.CName+item.ID">
             </el-input>
             
             <!--2、radio单选-->
@@ -34,36 +34,64 @@
             </el-checkbox-group>
 
             <!--4、select单选-->
-            <el-select v-model="modelList[index].model[0]" placeholder="请选择" v-if="item.Type==4">
+            <el-select v-model="modelList[index].model[0]" placeholder="请选择" v-if="item.Type==4" :ref="item.CName+item.ID">
                 <el-option v-for="(itemc) in modelList[index].options"
                     :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
                 </el-option>
             </el-select>
 
             <!--5、select多选-->
-            <el-select v-model="modelList[index].model" multiple placeholder="请选择" v-if="item.Type==5">
+            <el-select v-model="modelList[index].model" multiple placeholder="请选择" v-if="item.Type==5" :ref="item.CName+item.ID">
                 <el-option v-for="(itemc) in modelList[index].options"
                     :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
                 </el-option>
             </el-select>
 
             <!--6、自动补全单选(本地)-->
-            <el-autocomplete v-model="modelList[index].model[0]" 
-                :fetch-suggestions="(queryString, callbacK)=>{querySearchLocal(queryString, callbacK, item.SelectItemList)}"
-                placeholder="请输入内容" v-if="item.Type==6 && item.LoadType==1">
-            </el-autocomplete>
+            <!-- <el-autocomplete v-model="modelList[index].model[0]" 
+                :fetch-suggestions="(queryString, callbacK)=>{
+                    querySearchLocal(queryString, callbacK, item.SelectItemList)
+                }"
+                placeholder="请输入内容" v-if="item.Type==6 && item.LoadType==1" :ref="item.CName+item.ID">
+            </el-autocomplete> -->
 
             <!--6、自动补全单选(网络)-->
-            <el-autocomplete v-model="modelList[index].model[0]" 
-                :fetch-suggestions="(queryString, callbacK)=>{querySearchAsync(queryString, callbacK, item.ID, item.CName)}" 
-                placeholder="请输入内容" v-if="item.Type==6 && item.LoadType==3">
-            </el-autocomplete>
+            <!-- <el-autocomplete v-model="modelList[index].model[0]" 
+                :fetch-suggestions="(queryString, callbacK)=>{
+                    querySearchAsync(queryString, callbacK, item.ID, item.CName, item.ParentName)
+                }" 
+                placeholder="请输入内容" v-if="item.Type==6 && item.LoadType!=1" :ref="item.CName+item.ID">
+            </el-autocomplete> -->
+
+            <!--6、自动补全单选(本地)-->
+            <el-select v-model="modelList[index].model[0]" filterable remote reserve-keyword 
+                placeholder="请输入关键词" :remote-method="(queryString)=>{
+                    remoteMethodLocal(queryString, index, item.SelectItemList);
+                }" 
+                v-if="item.Type==6 && item.LoadType==1" :ref="item.CName+item.ID">
+                <el-option v-for="(itemc) in modelList[index].options"
+                    :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
+                </el-option>
+            </el-select>
+
+            <!--6、自动补全单选(网络)-->
+            <el-select v-model="modelList[index].model[0]" filterable remote reserve-keyword 
+                placeholder="请输入关键词" :remote-method="(queryString)=>{
+                    remoteMethodAsync(queryString, index, item.ID, item.CName, item.ParentName);
+                }" 
+                v-if="item.Type==6 && item.LoadType!=1" :ref="item.CName+item.ID">
+                <el-option v-for="(itemc) in modelList[index].options"
+                    :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
+                </el-option>
+            </el-select>
+
 
             <!--7、自动补全多选(本地)-->
             <el-select v-model="modelList[index].model" multiple filterable remote reserve-keyword 
                 placeholder="请输入关键词" :remote-method="(queryString)=>{
                     remoteMethodLocal(queryString, index, item.SelectItemList);
-                }" v-if="item.Type==7 && item.LoadType==1">
+                }" 
+                v-if="item.Type==7 && item.LoadType==1" :ref="item.CName+item.ID">
                 <el-option v-for="(itemc) in modelList[index].options"
                     :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
                 </el-option>
@@ -72,8 +100,9 @@
             <!--7、自动补全多选(网络)-->
             <el-select v-model="modelList[index].model" multiple filterable remote reserve-keyword 
                 placeholder="请输入关键词" :remote-method="(queryString)=>{
-                    remoteMethodAsync(queryString, index, item.ID, item.CName);
-                }" v-if="item.Type==7 && item.LoadType==2">
+                    remoteMethodAsync(queryString, index, item.ID, item.CName, item.ParentName);
+                }" 
+                v-if="item.Type==7 && item.LoadType!=1" :ref="item.CName+item.ID">
                 <el-option v-for="(itemc) in modelList[index].options"
                     :key="itemc.value" :label="itemc.name" :value="JSON.stringify(itemc)">
                 </el-option>
@@ -159,7 +188,7 @@
                             });
                             this.params[paramsName] = tempArr.join(","); //数组转字符串并添加到参数中
 
-                        }else if(inputType==1 || inputType==6){ //普通input
+                        }else if(inputType==1){ //普通input
                             this.params[paramsName] = inputModel[0];
 
                         }else{
@@ -186,8 +215,8 @@
             //搜索条件分类,并动态生成v-model(核心方法)
             modifySelectType(){
                 //console.log(this.searchList);
-                this.searchList.forEach((item) => { //动态生成v-model
-                    let obj = {"name":item.CName, "title":item.Title, "required":item.Required, "type":item.Type,
+                this.searchList.forEach((item, index) => { //动态生成v-model
+                    let obj = {"id":item.ID, "name":item.CName, "title":item.Title, "required":item.Required, "type":item.Type,
                         "listLength":item.SelectItemList.length, "model":[]};
 
                     let inputType = item.Type; //表单样式类型
@@ -201,24 +230,57 @@
                         obj.checkAll = false;
                         obj.isIndeterminate = false;
 
-                    }else if(inputType==4 || inputType==5){ //select框(单选&多选)
-                        obj.options = selectOptions;
-
-                    }else if(inputType==6 || inputType==7){ //自动补全(单选&多选)(本地&网络)
-                        obj.options = [];
-                        obj.id = item.ID; //设置id
-
-                    }else if(inputType==6){ //级联多选
-                        let level1List = Enumerable.From(selectOptions).Distinct("o=>o.name").ToArray();
-                        obj.options = level1List.map(itemi=>{
-                            let children = Enumerable.From(selectOptions).Where((o)=>{return o.name==itemi.name;}).ToArray();
-                            let options = children.map(itemc=>{
-                                return {"name": itemc.CName, "value":itemc.value};
-                            });
-                            return {"name": itemi.name, "options":options}
-                        });
                     }
+                    //4:select单选; 5:select多选; 6:自动补全单选(本地&网络); 7:自动补全多选(本地&网络)
+                    else if(inputType==4 || inputType==5 || inputType==6 || inputType==7){
+                        obj.options = selectOptions.length? selectOptions.slice(0,20): [];
+
+                    }
+                    
+                    // else if(inputType==10){ //级联多选
+                    //     let level1List = Enumerable.From(selectOptions).Distinct("o=>o.name").ToArray();
+                    //     obj.options = level1List.map(itemi=>{
+                    //         let children = Enumerable.From(selectOptions).Where((o)=>{return o.name==itemi.name;}).ToArray();
+                    //         let options = children.map(itemc=>{
+                    //             return {"name": itemc.CName, "value":itemc.value};
+                    //         });
+                    //         return {"name": itemi.name, "options":options}
+                    //     });
+                    // }
+
                     this.modelList.push(obj);
+
+                    //绑定额外事件
+                    if(item.LoadType!=1 && item.ParentID && item.ParentName){
+                        this.$nextTick(()=>{
+                            let parentRef = this.$refs[item.ParentName+item.ParentID];
+                            //console.log(parentRef);
+                            //jquery实现
+                            let parentSelectItems = $(parentRef[0].$el).find(".el-select-dropdown__item");
+                            //console.log(parentSelectItems);
+                            
+                            let _this = this;
+                            $(parentSelectItems).click(function(){
+                                //清空自己
+                                //console.log(_this.modelList);
+                                _this.modelList[index].options = [];
+                                _this.modelList[index].model = []; 
+                                let parentValue = $(this).children("span").text();
+
+                                //调用接口，给自己绑定新字典表
+                                let params = {};
+                                params.selectionId = item.ID;
+                                params[item.ParentName] = parentValue; //补充参数
+
+                                _this.$dataPost(_this.apiName, params, (data)=>{
+                                    let result = data.SelectItemList;
+                                    _this.modelList[index].options = result;
+                                });
+                            });
+                           
+                        })
+                    } 
+
                 });
             },
             /**********/
@@ -230,7 +292,7 @@
                 callback(result);
             },
             //实时调接口方法(自动补全单选)
-            querySearchAsync(queryString, callback, selectionId, extraName) {
+            querySearchAsync(queryString, callback, selectionId, ownName) {
                 if(!queryString){
                     callback([]);
                     return false;
@@ -238,7 +300,7 @@
 
                 let params = {};
                 params.selectionId = selectionId;
-                params[extraName] = queryString; //补充参数
+                params[ownName] = queryString; //补充参数
 
                 this.$dataPost(this.apiName, params, (data)=>{
                     //console.log(data);
@@ -252,36 +314,41 @@
                 this.modelList[index].options = result;
             },
             //重置options(自动补全多选相关)
-            remoteMethodAsync(queryString, index, selectionId, extraName){
-                let result = [];
-
+            remoteMethodAsync(queryString, index, selectionId, ownName, parentName){
                 if(queryString){
                     let params = {};
                     params.selectionId = selectionId;
-                    params[extraName] = queryString; //补充参数
+
+                    if(parentName){
+                        params[parentName] = queryString;
+                    }else{
+                        params[ownName] = queryString; //补充参数
+                    }
 
                     this.$dataPost(this.apiName, params, (data)=>{
-                        result = data.SelectItemList;
+                        let result = data.SelectItemList;
+                        this.modelList[index].options = result;
                     });
-                }
-                this.modelList[index].options = result;
+                }else{
+                    this.modelList[index].options = [];
+                }      
             },
-            //重置options(自动补全多选相关)
-            remoteMethodMulti(queryString, lists, index) { //lists:原始数据, index:autocomplete.models的索引
-                let mappedList = Enumerable.From(lists).Where((o)=>{return o.CName.indexOf(queryString)!=-1 
-                    || o.name.indexOf(queryString)!=-1 }).ToArray();
-                let level1List = Enumerable.From(mappedList).Distinct("o=>o.name").ToArray();
+            // //重置options(自动补全多选相关)
+            // remoteMethodMulti(queryString, lists, index) { //lists:原始数据, index:autocomplete.models的索引
+            //     let mappedList = Enumerable.From(lists).Where((o)=>{return o.CName.indexOf(queryString)!=-1 
+            //         || o.name.indexOf(queryString)!=-1 }).ToArray();
+            //     let level1List = Enumerable.From(mappedList).Distinct("o=>o.name").ToArray();
 
-                this.modelList[index].options = level1List.map(item=>{
-                    let children = Enumerable.From(mappedList).Where((o)=>{return o.name==item.name;}).ToArray();
+            //     this.modelList[index].options = level1List.map(item=>{
+            //         let children = Enumerable.From(mappedList).Where((o)=>{return o.name==item.name;}).ToArray();
 
-                    let options = children.map(itemc=>{
-                        return {"name": itemc.CName, "value":itemc.value};
-                    });
+            //         let options = children.map(itemc=>{
+            //             return {"name": itemc.CName, "value":itemc.value};
+            //         });
                     
-                    return {"name": item.name, "options":options}
-                });
-            },
+            //         return {"name": item.name, "options":options}
+            //     });
+            // },
             //根据index删除对应的model内的项
             delModel(model, index, type){
                 //console.log(model, index, type);
@@ -315,6 +382,9 @@
                     newArr.push( JSON.stringify(item) )
                 });
                 return newArr;
+            },
+            tempChange(){
+                alert("事件触发");
             }
         },
         watch:{
@@ -329,7 +399,6 @@
                     //console.log(usefulModelList);
                     usefulModelList.forEach((mitem)=>{ //循环已经选择的项
                         newVal.forEach((sitem, index)=>{ //循环新条件
-                            debugger;
                             if(sitem.CName==mitem.name){
                                 this.modelList[index].model = mitem.model; //设置新model默认值
                                 return true;

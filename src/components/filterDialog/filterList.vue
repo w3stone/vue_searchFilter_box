@@ -48,7 +48,7 @@
             //列表最终显示
             filterShow(filterItem){
                 let type = filterItem.type;
-                if(type!=1 && type!=6 && type!=10){
+                if(type!=1 && type!=10){
                     return JSON.parse(filterItem.model).name;
                 }else{
                     return filterItem.model;
